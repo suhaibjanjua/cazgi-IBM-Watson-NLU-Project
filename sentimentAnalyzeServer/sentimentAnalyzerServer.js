@@ -12,11 +12,11 @@ app.use(cors_app());
 /*Uncomment the following lines to loan the environment 
 variables that you set up in the .env file*/
 
-// const dotenv = require('dotenv');
-// dotenv.config();
+const dotenv = require('dotenv');
+dotenv.config();
 
-// const api_key = process.env.API_KEY;
-// const api_url = process.env.API_URL;
+const api_key = process.env.API_KEY;
+const api_url = process.env.API_URL;
 
 function getNLUInstance() {
     /*Type the code to create the NLU instance and return it.
@@ -28,9 +28,9 @@ function getNLUInstance() {
     const naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
         version: '2021-08-01',
         authenticator: new IamAuthenticator({
-            apikey: 'DkSwlqBroaKfaON4vibztPK8j-sjTGnmErPpVTDJl-9j'
+            apikey: api_key
         }),
-        serviceUrl: 'https://api.jp-tok.language-translator.watson.cloud.ibm.com/instances/eaeceb11-5c51-458f-b635-7c898128657a'
+        serviceUrl: api_url
     });
     return naturalLanguageUnderstanding;
 
@@ -44,7 +44,6 @@ app.get("/", (req, res) => {
 
 //The endpoint for the webserver ending with /url/emotion
 app.get("/url/emotion", (req, res) => {
-    //Extract the url passed from the client through the request object
     let urlToAnalyze = req.query.url
     const analyzeParams =
     {
@@ -61,7 +60,7 @@ app.get("/url/emotion", (req, res) => {
 
     naturalLanguageUnderstanding.analyze(analyzeParams)
         .then(analysisResults => {
-            //Please refer to the image to see the order of retrieval
+            //Retrieve the emotion and return it as a formatted string
             return res.send(analysisResults.result.keywords[0].emotion, null, 2);
         })
         .catch(err => {
